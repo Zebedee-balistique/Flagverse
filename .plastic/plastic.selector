@@ -1,0 +1,4 @@
+repository "Flagverse/Flagverse@1375079634185@cloud"
+  path "/"
+    br "/main"
+    co "/main"
