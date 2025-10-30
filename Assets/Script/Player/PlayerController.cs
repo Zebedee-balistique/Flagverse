@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using System;
 
 public class PlayerController : MonoBehaviour
 {
@@ -7,6 +8,8 @@ public class PlayerController : MonoBehaviour
 
     public Profile Profile; //To distinguish Player 1 from Player 2
     public float speed = 5f;
+
+    public static event Action<PlayerController> OnPlayerWin; //Action for the end of the game
 
 
     //PRIVATE VARIABLES
@@ -81,15 +84,75 @@ public class PlayerController : MonoBehaviour
     private void OnMove(InputAction.CallbackContext ctx)
     {
         m_moveInput = ctx.ReadValue<Vector2>();
-        Debug.Log("OnMove Activated");
+        //Debug.Log("OnMove Activated");
     }
 
     private void OnTriggerEnter2D(Collider2D Collision)
     {   
-        GameObject collider = Collision.gameObject;
 
-        if (collider.tag == "Flag")
+        GameObject collider = Collision.gameObject;
+        Debug.Log("Entered in " + collider.name);
+
+        if (collider.tag == "Location Tag")
         {
+            Debug.Log("Encountered a location");
+            LocationIdentifiers identifier = collider.GetComponent<LocationIdentifiers>();
+
+            if (identifier == null)
+            {
+                Debug.Log("Location without identifier");
+                return;
+            }
+
+            switch(identifier.Type)
+            {
+                case LocationType.FlagPole:
+                    FlagPoleCollision(collider);
+                    break;
+                
+                default:
+                    break;
+            }
         }
+    }
+
+    private void FlagPoleCollision(GameObject flagPole)
+    {
+        Debug.Log("Collision with a flag pole");
+        
+        FlagPoleManager manager = flagPole.GetComponent<FlagPoleManager>();
+
+        if (manager == null)
+        {
+            Debug.Log("No manager on Flag Pole");
+            return;
+        }
+
+        if (Profile.ProfileNumber == manager.Profile.ProfileNumber) //Self Flag Pole
+        {
+            if(m_sFlag) //I carry my flag
+            {
+                m_sFlag = false; //I put my flag
+                manager.PutFlag(); //I tell the FlagPole
+            }
+
+            if(m_eFlag) //I carry the enemy flag
+            {
+                OnPlayerWin?.Invoke(this);
+            }
+        }
+        else
+        {
+            if(!m_eFlag) //I don't have the enemy flag yet
+            {
+                m_eFlag = true;
+                manager.TakeFlag();
+            }
+        }
+    }
+
+    public void DisableInputs()
+    {
+        m_actionMap.Disable();
     }
 }

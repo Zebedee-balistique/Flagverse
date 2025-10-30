@@ -4,7 +4,10 @@
 TagManager:
   serializedVersion: 3
   tags:
-  - Flag
+  - Collectible Tag
+  - Location Tag
+  - Enemy Tag
+  - Player Tag
   layers:
   - Default
   - TransparentFX
