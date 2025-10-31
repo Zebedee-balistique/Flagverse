@@ -15,6 +15,7 @@ public class GameManager : MonoBehaviour
     public Transform flagSpawn2;
 
     private List<PlayerController> players;
+    private UIManager UIManager;
 
     private void OnEnable()
     {
@@ -25,18 +26,20 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         players = new List<PlayerController>();
+        Canvas UI = GetComponentInChildren<Canvas>();
+        UIManager = UI.GetComponent<UIManager>();
         
         GameObject p1 = Instantiate(playerPrefab, spawn1.position, Quaternion.identity);
         PlayerController controller1 = p1.GetComponent<PlayerController>();
         controller1.Profile = player1Profile;
-        p1.name = "Player1";
+        p1.name = "Player 1";
 
         players.Add(controller1);
 
         GameObject p2 = Instantiate(playerPrefab, spawn2.position, Quaternion.identity);
         PlayerController controller2 = p2.GetComponent<PlayerController>();
         controller2.Profile = player2Profile; 
-        p2.name = "Player2";
+        p2.name = "Player 2";
 
         players.Add(controller2);
 
@@ -52,12 +55,13 @@ public class GameManager : MonoBehaviour
 
     }
 
-    void PlayerWin(PlayerController winner)
+    void PlayerWin(GameObject winner)
     {
         Debug.Log("Player wins");
         foreach(var player in players)
         {
             player.DisableInputs();
+            UIManager.DisplayWinMessage(winner.name);
         }
     }
 

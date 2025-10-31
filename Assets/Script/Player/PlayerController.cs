@@ -9,7 +9,7 @@ public class PlayerController : MonoBehaviour
     public Profile Profile; //To distinguish Player 1 from Player 2
     public float speed = 5f;
 
-    public static event Action<PlayerController> OnPlayerWin; //Action for the end of the game
+    public static event Action<GameObject> OnPlayerWin; //Action for the end of the game
 
 
     //PRIVATE VARIABLES
@@ -138,7 +138,7 @@ public class PlayerController : MonoBehaviour
 
             if(m_eFlag) //I carry the enemy flag
             {
-                OnPlayerWin?.Invoke(this);
+                OnPlayerWin?.Invoke(gameObject);
             }
         }
         else
